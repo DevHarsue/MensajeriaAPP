@@ -36,7 +36,7 @@ export default function ChatComponent() {
         const formattedUsername = username.toUpperCase();
         localStorage.setItem('user', formattedUsername);
         
-        ws.current = new WebSocket(`ws://${process.env.NEXT_PUBLIC_WS_URL || '192.168.1.37:8000'}/ws`);
+        ws.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL || '192.168.1.37:8000'}/ws`);
 
         ws.current.onopen = () => {
             ws.current?.send(formattedUsername);
