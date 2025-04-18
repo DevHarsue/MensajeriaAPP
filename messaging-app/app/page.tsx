@@ -67,8 +67,8 @@ export default function ChatComponent() {
                 case 'chat_response':
                     if (data.content) {
                         const chatHistory = data.content.map((msg: any) => ({
-                        sender: msg.sender,
-                        content: msg.content
+                            sender: msg.sender,
+                            content: msg.content
                         }));
                         setMessages(chatHistory);
                     }
