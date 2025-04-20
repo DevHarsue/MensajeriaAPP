@@ -1,3 +1,5 @@
 import ChatComponent from "./ui/chatComponent";
 
-export default () => <ChatComponent />;
+export default function Page(){   
+    return (<ChatComponent />);
+}
