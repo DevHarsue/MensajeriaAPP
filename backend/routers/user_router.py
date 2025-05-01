@@ -5,6 +5,7 @@ from ..models.user_model import UserRequest,UserResponse,UsersResponse
 from ..models.validations import validate_email
 from ..actions.user_actions import UserActions
 from ..actions.code_actions import CodeActions
+from .token_router import token_depend
 
 user_router = APIRouter()
 
@@ -28,6 +29,7 @@ def create_user(user: UserRequest) -> UserResponse:
 
 @user_router.get("/",status_code=status.HTTP_200_OK)
 def get_search_users(
+        _: token_depend,
         text: str = Query(min_length=2),
         page: int = Query(1,ge=1), 
         limit: int = Query(10,le=100)
@@ -38,7 +40,7 @@ def get_search_users(
     return JSONResponse(content=users_response.model_dump(),status_code=status.HTTP_200_OK)
 
 @user_router.get("/get_user_by_email",status_code=status.HTTP_200_OK)
-def get_user_by_email(email: str = Query(example="example@example.com")) -> UsersResponse:
+def get_user_by_email(email: str = Query(example="example@example.com")) -> UserResponse:
     email = email.upper()
     if not validate_email(email=email):
         raise HTTPException(detail="Invalid Email",status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)

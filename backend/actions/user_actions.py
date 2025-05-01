@@ -1,6 +1,6 @@
 from .with_session import with_session
 from ..models.user_model import UserRequest,UserResponse,UsersResponse,MetaRegisters
-from ..utils.encrypt import hash_password
+from ..utils.encrypt import hash_password,verify_password
 from sqlalchemy.orm.session import Session
 from sqlalchemy import select
 from sqlalchemy.sql.operators import ilike_op
@@ -86,6 +86,21 @@ class UserActions:
                     username=user_db[0].username,
                     email=user_db[0].email
                 )
+        except Exception as e:
+            print(e)
+            print(e.__class__)
+            
+        return None
+
+    @with_session
+    def validate_user(self,session: Session, username: str, password: str) -> UserResponse | None:
+        try:
+            query = select(User).where(User.username==username)
+            user_db = session.execute(query).fetchone()
+            if not user_db:
+                return None
+            if verify_password(password=password,hashed_password=user_db[0].password):
+                return UserResponse(username=username,email=user_db[0].email)
         except Exception as e:
             print(e)
             print(e.__class__)
