@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { NotificationProvider } from "@/providers/NotificationContext";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -27,10 +28,12 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <main>
-                    {children}
-                </main>
+                <NotificationProvider>
+                    <main className="flex min-h-screen bg-gray-800">
+                        {children}
+                    </main>
+                </NotificationProvider>
             </body>
-        </html>
+        </html> 
     );
 }

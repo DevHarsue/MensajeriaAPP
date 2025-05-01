@@ -1,5 +1,5 @@
-import ChatComponent from "./ui/chatComponent";
+import LoginComponent from "./ui/loginComponent";
 
 export default function Page(){   
-    return (<ChatComponent />);
+    return (<LoginComponent />);
 }

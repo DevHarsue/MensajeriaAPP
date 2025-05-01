@@ -21,14 +21,12 @@ export default function ChatComponent() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [showChat, setShowChat] = useState(false);
     const [showUsers, setShowUsers] = useState(false);
-    
     const ws = useRef<WebSocket | null>(null);
     const recipientRef = useRef<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         recipientRef.current = recipient;
-        console.log("useEffect")
     }, [recipient]);
 
     // Auto-scroll al recibir nuevos mensajes
@@ -42,7 +40,7 @@ export default function ChatComponent() {
         const formattedUsername = username.toUpperCase();
         localStorage.setItem('user', formattedUsername);
         
-        ws.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL || '192.168.0.110:8000'}/ws`);
+        ws.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL || 'localhost:8000'}/ws`);
 
         ws.current.onopen = () => {
             ws.current?.send(formattedUsername);
@@ -111,84 +109,136 @@ export default function ChatComponent() {
     };
 
     return (
-        <main className="flex h-screen bg-gray-800">
-            {/* Sidebar - Users List */}
-            {showUsers && (
-                <section
-                    className={`${
-                        showChat ? 'hidden md:flex' : 'flex'
-                    } flex-col w-full md:w-1/3 lg:w-1/4 bg-gray-900 border-r border-gray-700`}
-                >
-                    {/* Header del sidebar */}
-                    <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center justify-between">
-                        <h1 className="text-xl font-semibold text-gray-200">
-                            Chats
-                        </h1>
-                        <div className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-medium">
-                            {username.charAt(0)}
-                        </div>
+        <div>
+            <section
+                className={`${
+                    showChat ? 'hidden md:flex' : 'flex'
+                } flex-col w-full md:w-1/3 lg:w-1/4 bg-gray-900 border-r border-gray-700`}
+            >
+                {/* Header del sidebar */}
+                <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center justify-between">
+                    <h1 className="text-xl font-semibold text-gray-200">
+                        Chats
+                    </h1>
+                    <div className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-medium">
+                        {username.charAt(0)}
                     </div>
-        
-                    {/* Lista de usuarios */}
-                    <div className="overflow-y-auto flex-1">
-                        <ul>
-                            {users.map((user) => (
-                                <li
-                                    key={user}
-                                    className={`p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-800 transition-colors ${
-                                        recipient === user ? 'bg-orange-700' : ''
-                                    }`}
-                                    onClick={() => selectChat(user)}
-                                >
-                                    <div className="flex items-center">
-                                        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-orange-600 font-medium">
-                                            {user.charAt(0)}
-                                        </div>
-                                        <div className="ml-3">
-                                            <p className="text-sm font-medium text-gray-200">{user}</p>
-                                            <p className="text-xs text-gray-400">
-                                                Online
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </section>
-            )}
-        
-            {/* Connect Form (when not connected) */}
-            {!showUsers && (
-                <section className="flex flex-col items-center justify-center w-full">
-                    <div className="w-full max-w-md p-8 bg-gray-900 rounded-lg shadow-lg border border-gray-700">
-                        <div className="flex justify-center mb-6">
-                            <div className="w-16 h-16 rounded-full bg-orange-600 flex items-center justify-center text-white text-2xl font-bold">
-                                M
-                            </div>
-                        </div>
-                        <h1 className="text-2xl font-bold text-gray-200 mb-6 text-center">
-                            Bienvenido a Messaging App
-                        </h1>
-                        <div className="mb-6">
-                            <label
-                                htmlFor="username"
-                                className="block text-sm font-medium text-gray-600 mb-2"
+                </div>
+    
+                {/* Lista de usuarios */}
+                <div className="overflow-y-auto flex-1">
+                    <ul>
+                        {users.map((user) => (
+                            <li
+                                key={user}
+                                className={`p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-800 transition-colors ${
+                                    recipient === user ? 'bg-orange-700' : ''
+                                }`}
+                                onClick={() => selectChat(user)}
                             >
-                                Nombre de Usuario
-                            </label>
-                            <input
-                                type="text"
-                                id="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value.toUpperCase())}
-                                placeholder="Ingresa tu nombre"
-                                className="w-full px-4 py-3 bg-gray-800 text-gray-200 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                                <div className="flex items-center">
+                                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-orange-600 font-medium">
+                                        {user.charAt(0)}
+                                    </div>
+                                    <div className="ml-3">
+                                        <p className="text-sm font-medium text-gray-200">{user}</p>
+                                        <p className="text-xs text-gray-400">
+                                            Online
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </section>
+            <section className="flex flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900">
+                {/* Chat Header */}
+                <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center">
+                    <button
+                        onClick={() => setShowChat(false)}
+                        className="md:hidden mr-3 p-2 rounded-full hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors cursor-pointer"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                        {/* Icono de cerrar chat */}
+                            <path
+                                fillRule="evenodd"
+                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                clipRule="evenodd"
                             />
-                        </div>
+                        </svg>
+                    </button>
+                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-orange-600 font-medium">
+                        {recipient?.charAt(0)}
+                    </div>
+                    <div className="ml-3 flex-1">
+                        <p className="text-sm font-medium text-gray-200">{recipient}</p>
+                        <p className="text-xs text-gray-400">En línea</p>
+                    </div>
+                </div>
+    
+                {/* Messages Area */}
+                <div
+                    className="flex-1 p-4 overflow-y-auto bg-gray-900 bg-opacity-90"
+                    style={{
+                        backgroundImage:
+                            "url('data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E')",
+                    }}
+                >
+                    <div className="space-y-3">
+                        {messages.map((msg, index) => (
+                            <div
+                                key={index}
+                                className={`flex ${
+                                    msg.sender === username ? 'justify-end' : 'justify-start'
+                                }`}
+                            >
+                                {/* Avatar del usuario */}
+                                <div
+                                    className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-lg ${
+                                        msg.sender === username
+                                            ? 'bg-orange-600 text-white rounded-br-none'
+                                            : 'bg-gray-800 text-gray-200 rounded-bl-none'
+                                    }`}
+                                >
+                                    <p className="text-sm">{msg.content}</p>
+                                    <p
+                                        className={`text-xs mt-1 text-right ${
+                                            msg.sender === username ? 'text-orange-200' : 'text-gray-400'
+                                        }`}
+                                    >
+                                        {new Date().toLocaleTimeString([], {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        })}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                        <div ref={messagesEndRef} />
+                    </div>
+                </div>
+    
+                {/* Message Input */}
+                <div className="p-4 bg-gray-800 border-t border-gray-700">
+                    <form onSubmit={sendMessage} className="flex items-center gap-2">
+                        <input
+                            type="text"
+                            id="message"
+                            value={messageInput}
+                            onChange={(e) => setMessageInput(e.target.value)}
+                            placeholder="Escribe un mensaje..."
+                            className="flex-1 px-4 py-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        />
                         <button
-                            onClick={setUpWS}
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 cursor-pointer flex items-center justify-center gap-2"
+                            type="submit"
+                            className="p-3 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={!messageInput}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -196,126 +246,16 @@ export default function ChatComponent() {
                                 viewBox="0 0 20 20"
                                 fill="currentColor"
                             >
-                            {/* Icono de enviar mensaje */}
                                 <path
                                     fillRule="evenodd"
                                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
                                     clipRule="evenodd"
                                 />
                             </svg>
-                            Conectar
                         </button>
-                    </div>
-                </section>
-            )}
-        
-            {/* Chat Container */}
-            {showChat && recipient && (
-                <section className="flex flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900">
-                    {/* Chat Header */}
-                    <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center">
-                        <button
-                            onClick={() => setShowChat(false)}
-                            className="md:hidden mr-3 p-2 rounded-full hover:bg-gray-700 text-gray-400 hover:text-gray-200 transition-colors cursor-pointer"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-5 w-5"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                            >
-                            {/* Icono de cerrar chat */}
-                                <path
-                                    fillRule="evenodd"
-                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                    clipRule="evenodd"
-                                />
-                            </svg>
-                        </button>
-                        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-orange-600 font-medium">
-                            {recipient.charAt(0)}
-                        </div>
-                        <div className="ml-3 flex-1">
-                            <p className="text-sm font-medium text-gray-200">{recipient}</p>
-                            <p className="text-xs text-gray-400">En línea</p>
-                        </div>
-                    </div>
-        
-                    {/* Messages Area */}
-                    <div
-                        className="flex-1 p-4 overflow-y-auto bg-gray-900 bg-opacity-90"
-                        style={{
-                            backgroundImage:
-                                "url('data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E')",
-                        }}
-                    >
-                        <div className="space-y-3">
-                            {messages.map((msg, index) => (
-                                <div
-                                    key={index}
-                                    className={`flex ${
-                                        msg.sender === username ? 'justify-end' : 'justify-start'
-                                    }`}
-                                >
-                                    {/* Avatar del usuario */}
-                                    <div
-                                        className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-lg ${
-                                            msg.sender === username
-                                                ? 'bg-orange-600 text-white rounded-br-none'
-                                                : 'bg-gray-800 text-gray-200 rounded-bl-none'
-                                        }`}
-                                    >
-                                        <p className="text-sm">{msg.content}</p>
-                                        <p
-                                            className={`text-xs mt-1 text-right ${
-                                                msg.sender === username ? 'text-orange-200' : 'text-gray-400'
-                                            }`}
-                                        >
-                                            {new Date().toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                            })}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                            <div ref={messagesEndRef} />
-                        </div>
-                    </div>
-        
-                    {/* Message Input */}
-                    <div className="p-4 bg-gray-800 border-t border-gray-700">
-                        <form onSubmit={sendMessage} className="flex items-center gap-2">
-                            <input
-                                type="text"
-                                id="message"
-                                value={messageInput}
-                                onChange={(e) => setMessageInput(e.target.value)}
-                                placeholder="Escribe un mensaje..."
-                                className="flex-1 px-4 py-3 bg-gray-700 text-gray-200 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                            />
-                            <button
-                                type="submit"
-                                className="p-3 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled={!messageInput}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
-                </section>
-            )}
-        </main>
+                    </form>
+                </div>
+            </section>
+        </div>
     );
 }

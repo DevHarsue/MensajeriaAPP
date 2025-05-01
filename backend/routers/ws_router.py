@@ -1,20 +1,10 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from ..models.message_model import Message
 from typing import Dict,List,FrozenSet
-from pydantic import BaseModel,field_serializer
 from datetime import datetime
-
 
 active_connections: Dict[str, WebSocket] = {}
 
-class Message(BaseModel):
-    date: datetime
-    sender: str
-    content: str
-    
-    @field_serializer('date')
-    def date_to_isoformat(self, value: datetime) -> str:
-        return value.isoformat()
-    
 chats: Dict[FrozenSet,List[Message]] = {}
 
 ws_router = APIRouter()
@@ -33,13 +23,10 @@ async def websocket_endpoint(websocket: WebSocket):
                 })
             await websocket.close()
             return
-        
         # Guardar la conexión activa con el nombre de usuario
         active_connections[username] = websocket
-        
         # Notificar a todos la nueva lista de usuarios
         await broadcast_user_list()
-        
         while True:
             # Recibir mensajes y reenviar al destinatario
             data = await websocket.receive_json()
@@ -56,7 +43,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     "content": [m.model_dump() for m in chat] if chat else None
                 })
                 continue
-            
             recipient_ws = active_connections.get(data['recipient'])
             if recipient_ws:
                 await recipient_ws.send_json({
@@ -70,7 +56,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     chats[key] = [message]
                 else:
                     chats[key].append(message)
-                
     except WebSocketDisconnect as e:
         print(e)
         del active_connections[username]

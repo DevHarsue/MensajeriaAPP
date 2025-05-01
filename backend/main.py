@@ -1,14 +1,31 @@
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from routers.ws_router import ws_router
+from fastapi.middleware.cors import CORSMiddleware
+from .routers.ws_router import ws_router
+from .routers.user_router import user_router
+from .routers.code_router import code_router
 
-app = FastAPI()
+app = FastAPI(
+    title="API MESSAGING-APP",
+    version="1.0.0"
+)
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
-async def get():
-    with open("backend/test.html",mode="r") as file:
-        html = file.read()
-        return HTMLResponse(html)
+def home():
+    return "API RUNNING"
 
 app.include_router(ws_router, tags=["websocket"])
+app.include_router(user_router, tags=["users"], prefix="/users")
+app.include_router(code_router, tags=["codes"], prefix="/codes")
