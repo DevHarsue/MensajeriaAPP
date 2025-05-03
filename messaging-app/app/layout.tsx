@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { NotificationProvider } from "@/providers/NotificationContext";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Auth from "./components/auth";
+import { UserProvider } from "@/providers/UserContext";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -29,9 +31,13 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <NotificationProvider>
-                    <main className="flex min-h-screen bg-gray-800">
-                        {children}
-                    </main>
+                    <UserProvider>
+                        <Auth>
+                            <main className="flex min-h-screen bg-gray-800">
+                                {children}
+                            </main>
+                        </Auth>
+                    </UserProvider>
                 </NotificationProvider>
             </body>
         </html> 

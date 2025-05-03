@@ -19,6 +19,20 @@
   }
 }
 
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-orange-700);
+  border-radius: 10px;
+}
+
+
 body {
   background: var(--background);
   color: var(--foreground);

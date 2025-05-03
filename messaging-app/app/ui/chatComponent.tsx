@@ -3,38 +3,38 @@ import { useState, useEffect, useRef } from 'react';
 import { SideBar } from './components/sidebar';
 import { ChatMessage,WebSocketMessage } from '@/types/chat';
 import { Chat } from './components/chat';
+import { useUser } from '@/providers/UserContext';
+import Loader from './components/loader';
+import { VARS } from '../utils/env';
 
 export default function ChatComponent() {
-    const [username, setUsername] = useState('');
     const [recipient, setRecipient] = useState<string>("");
     const [messageInput, setMessageInput] = useState('');
-    const [users, setUsers] = useState<string[]>(["Epa","pepito"]);
+    const [users, setUsers] = useState<string[]>([]);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [showChat, setShowChat] = useState(false);
-    const [showUsers, setShowUsers] = useState(false);
     const ws = useRef<WebSocket | null>(null);
     const recipientRef = useRef<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const {user} = useUser()
+
     useEffect(() => {
         recipientRef.current = recipient;
-    }, [recipient]);
-
-    // Auto-scroll al recibir nuevos mensajes
-    useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    }, [recipient,messages]);
+
+    useEffect(()=>{
+        setUpWS()
+    },[user])
 
     const setUpWS = () => {
-        if (!username) return;
-
-        const formattedUsername = username.toUpperCase();
-        localStorage.setItem('user', formattedUsername);
+        if (!user?.username) return;
         
-        ws.current = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL || 'localhost:8000'}/ws`);
+        ws.current = new WebSocket(`${VARS.WS_URL || 'localhost:8000'}/ws`);
 
         ws.current.onopen = () => {
-            ws.current?.send(formattedUsername);
-            setShowUsers(true);
+            ws.current?.send(user.username);
         };
 
         ws.current.onmessage = (event) => {
@@ -43,7 +43,7 @@ export default function ChatComponent() {
             switch (data.type) {
                 case 'user_list':
                     if (data.users) {
-                        setUsers(data.users.filter(u => u !== formattedUsername));
+                        setUsers(data.users.filter(u => u !== user.username));
                     }
                     break;
                 
@@ -54,7 +54,6 @@ export default function ChatComponent() {
                     break;
                 
                 case 'alert':
-                    setShowUsers(false);
                     alert(data.content);
                     break;
                 
@@ -76,7 +75,7 @@ export default function ChatComponent() {
         setShowChat(true);
         setMessages([]);
         ws.current?.send(JSON.stringify({
-            username: username,
+            username: user?.username,
             recipient: r,
             type: "fetch_chat"
         }));
@@ -84,25 +83,28 @@ export default function ChatComponent() {
 
     const sendMessage = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user?.username) return;
+
         if (!messageInput || !recipient || !ws.current) return;
 
         const messageData = {
-            username: username,
+            username: user?.username,
             recipient: recipient,
             content: messageInput,
             type: "send_message"
         };
 
         ws.current.send(JSON.stringify(messageData));
-        setMessages(prev => [...prev, { sender: username, content: messageInput }]);
+        setMessages(prev => [...prev, { sender: user.username, content: messageInput }]);
         setMessageInput('');
     };
-
+    if (!user?.username) return <Loader />;
+    
     return (
         <div className='flex w-full bg-gray-800'>
             <SideBar 
                 showChat={showChat}
-                userLetter={username.charAt(0)}
+                userLetter={user.username.charAt(0)}
                 users={users}
                 selectChat={selectChat}
                 recipient={recipient}
@@ -111,7 +113,7 @@ export default function ChatComponent() {
                 setShowChat={setShowChat}
                 recipient={recipient}
                 messages={messages}
-                username={username}
+                username={user.username}
                 messageInput={messageInput}
                 setMessageInput={setMessageInput}
                 sendMessage={sendMessage}

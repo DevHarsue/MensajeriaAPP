@@ -35,12 +35,13 @@ def verify_token(token: str):
         raise HTTPException(detail="TOKEN IS INVALID",status_code=status.HTTP_401_UNAUTHORIZED)
 
 
-def encode_token(username:str):
+def encode_token(username:str,email:str):
     try:
         payload = {
             "sub": json.dumps(
                     {
-                        "username":username
+                        "username":username,
+                        "email":email
                     }),
             "exp": datetime.now(UTC) + timedelta(days=30)
         }
@@ -60,11 +61,12 @@ class RequestForm:
 @token_router.post("/token")
 def login(form_data: RequestForm = Depends()):
     actions = UserActions()
-    if not actions.validate_user(username=form_data.username,password=form_data.password):
+    user = actions.validate_user(username=form_data.username,password=form_data.password)
+    if not user:
         raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="INVALID CREDENTIALS",
             )
-    token = encode_token(form_data.username)
+    token = encode_token(user.username,user.email)
     
     return {"access_token": token, "token_type": "bearer"}

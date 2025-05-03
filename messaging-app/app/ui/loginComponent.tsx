@@ -31,7 +31,7 @@ export default function LoginComponent(){
                 const data = await res.json()
                 setCookie("token",data.access_token,{
                     secure: VARS.ENV=="production",
-                    sameSite: "lax",
+                    sameSite: "strict",
                     maxAge: 86400 * 7
                 })
                 showNotification({"message":"SESION INICIADA.","type":"success"})

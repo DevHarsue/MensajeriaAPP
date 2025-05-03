@@ -52,3 +52,7 @@ def get_user_by_email(email: str = Query(example="example@example.com")) -> User
         return JSONResponse(content="User not Found",status_code=status.HTTP_404_NOT_FOUND)
         
     return JSONResponse(content=user_response.model_dump(),status_code=status.HTTP_200_OK)
+
+@user_router.get("/validate_token",status_code=status.HTTP_200_OK)
+def get_validate_token(data:token_depend):
+    return UserResponse(username=data["username"],email=data["email"])

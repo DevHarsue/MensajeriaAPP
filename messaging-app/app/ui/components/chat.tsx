@@ -27,7 +27,7 @@ export const Chat = (
         }:ChatProps
     ) => {  
     return (
-        <section className={`${showChat ? 'flex' : 'hidden'} flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900`}>
+        <section className={`${showChat ? 'flex' : 'hidden'} flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900 h-screen`}>
             {/* Chat Header */}
             <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center">
                 <button
@@ -59,7 +59,7 @@ export const Chat = (
 
             {/* Messages Area */}
             <div
-                className="flex-1 p-4 overflow-y-auto bg-gray-900 bg-opacity-90"
+                className="flex-1 p-4 overflow-y-auto bg-gray-900 bg-opacity-90 max-h-full"
             >
                 <div className="space-y-3">
                     {messages.map((msg, index) => (
@@ -97,8 +97,10 @@ export const Chat = (
 
             {/* Message Input */}
             <div className="p-4 bg-gray-800 border-t border-gray-700">
-                <form onSubmit={sendMessage} className="flex items-center gap-2">
+                <form onSubmit={sendMessage} className="flex items-center gap-2" autoComplete="off">
                     <input
+                        name="inputMessageToSend"
+                        autoComplete="off"
                         type="text"
                         id="message"
                         value={messageInput}
