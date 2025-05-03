@@ -8,7 +8,7 @@ from .routers.token_router import token_router
 
 app = FastAPI(
     title="API MESSAGING-APP",
-    version="1.0.1"
+    version="1.2.1"
 )
 
 origins = [

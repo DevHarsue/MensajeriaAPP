@@ -6,14 +6,47 @@ import { AText, H1Text } from './components/texts';
 import Input from "./components/inputs";
 import { ButtonSend } from "./components/buttons";
 import ContainerForm from "./components/containerForm";
+import { VARS } from "../utils/env";
+import { useNotification } from "@/providers/NotificationContext";
+import { setCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
 export default function LoginComponent(){
     const [username,setUsername] = useState("")
     const [password,setPassword] = useState("")
     const [loading,setLoading] = useState(false)
-    setLoading(false)
-    const handleButton = async ()=>{
+    const {showNotification} = useNotification()
+    const router = useRouter()
 
+    const handleButton = async ()=>{
+        setLoading(true)
+        await fetch(VARS.API_URL+"token/",{
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `username=${username}&password=${password}`
+        }).then(async res=>{
+            if (res.status==200){
+                const data = await res.json()
+                setCookie("token",data.access_token,{
+                    secure: VARS.ENV=="production",
+                    sameSite: "lax",
+                    maxAge: 86400 * 7
+                })
+                showNotification({"message":"SESION INICIADA.","type":"success"})
+                router.push("/home")
+
+            }else if (res.status==401){
+                showNotification({"message":"Usuario o Contraseña Incorrecta.","type":"info"})
+            }else{
+                throw "Intente nuevamente."
+            }
+
+        }).catch(err=>{
+            showNotification({"message":err.toString(),"type":"error"})
+        })
+        setLoading(false)
     }
 
     return (
