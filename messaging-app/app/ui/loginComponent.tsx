@@ -8,15 +8,13 @@ import { ButtonSend } from "./components/buttons";
 import ContainerForm from "./components/containerForm";
 import { VARS } from "../utils/env";
 import { useNotification } from "@/providers/NotificationContext";
-import { setCookie,getCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
+import { setCookie } from "cookies-next";
 
 export default function LoginComponent(){
     const [username,setUsername] = useState("")
     const [password,setPassword] = useState("")
     const [loading,setLoading] = useState(false)
     const {showNotification} = useNotification()
-    const router = useRouter()
 
     const handleButton = async ()=>{
         setLoading(true)
