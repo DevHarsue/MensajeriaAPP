@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { SideBar } from './components/sidebar';
+import { ChatsBar } from './components/chatsBar';
 import { ChatMessage,WebSocketMessage } from '@/types/chat';
 import { Chat } from './components/chat';
 import { useUser } from '@/providers/UserContext';
 import Loader from './components/loader';
 import { VARS } from '../utils/env';
+import { SideBar } from './components/sidebar';
 
 export default function ChatComponent() {
     const [recipient, setRecipient] = useState<string>("");
@@ -99,12 +100,14 @@ export default function ChatComponent() {
         setMessageInput('');
     };
     if (!user?.username) return <Loader />;
-    
     return (
         <div className='flex w-full bg-gray-800'>
             <SideBar 
-                showChat={showChat}
                 userLetter={user.username.charAt(0)}
+                showChat={showChat}
+            />
+            <ChatsBar 
+                showChat={showChat}
                 users={users}
                 selectChat={selectChat}
                 recipient={recipient}

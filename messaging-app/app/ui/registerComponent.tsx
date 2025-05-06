@@ -174,7 +174,7 @@ export default function RegisterComponent(){
             )}
             {showCode && (
                 <div>
-                    <a className="block w-full text-center text-sm text-gray-700 cursor-pointer hover:text-orange-900" onClick={()=>setShowCode(false)}>{email}.¿Es correcto?</a>
+                    <a className="block w-full text-center text-sm text-gray-700 cursor-pointer hover:text-orange-900" onClick={()=>setShowCode(false)}>{email}. ¿Es correcto?</a>
                     <div className="flex items-center justify-center pb-9">
                         <VerificationCodeInput onCodeChange={handleCodeChange} />
                     </div>

@@ -8,7 +8,7 @@ import { ButtonSend } from "./components/buttons";
 import ContainerForm from "./components/containerForm";
 import { VARS } from "../utils/env";
 import { useNotification } from "@/providers/NotificationContext";
-import { setCookie } from "cookies-next";
+import { setCookie,getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
 
 export default function LoginComponent(){
@@ -34,20 +34,25 @@ export default function LoginComponent(){
                     sameSite: "strict",
                     maxAge: 86400 * 7
                 })
+                
                 showNotification({"message":"SESION INICIADA.","type":"success"})
-                router.push("/home")
+                window.location.assign("/home")
 
             }else if (res.status==401){
                 showNotification({"message":"Usuario o Contraseña Incorrecta.","type":"info"})
+                setLoading(false)
             }else{
                 throw "Intente nuevamente."
             }
 
         }).catch(err=>{
             showNotification({"message":err.toString(),"type":"error"})
+            setLoading(false)
+
         })
-        setLoading(false)
     }
+
+    
 
     return (
         <ContainerForm loading={loading}>
