@@ -3,10 +3,11 @@ from ..models.user_model import UserRequest,UserResponse,UsersResponse,MetaRegis
 from ..utils.encrypt import hash_password,verify_password
 from sqlalchemy.orm.session import Session
 from sqlalchemy import select
-from sqlalchemy.sql.operators import ilike_op
+from sqlalchemy.sql.operators import ilike_op,or_
 from sqlalchemy.sql.functions import count
 from sqlalchemy.exc import IntegrityError
 from ..db.db_models import User
+from typing import Dict
 
 class UserActions:
     
@@ -101,6 +102,18 @@ class UserActions:
                 return None
             if verify_password(password=password,hashed_password=user_db[0].password):
                 return UserResponse(username=username,email=user_db[0].email)
+        except Exception as e:
+            print(e)
+            print(e.__class__)
+            
+        return None
+    
+    @with_session
+    def get_id_users_by_username(self, session: Session, username_1:str,username_2:str) -> Dict | None:
+        try:
+            query = select(User.user_id,User.username).where(or_(User.username==username_1, User.username==username_2))
+            users_id = session.execute(query).fetchall()
+            return {user[1]:user[0] for user in users_id}
         except Exception as e:
             print(e)
             print(e.__class__)

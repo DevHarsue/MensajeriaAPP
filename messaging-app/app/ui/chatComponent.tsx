@@ -35,7 +35,7 @@ export default function ChatComponent() {
         ws.current = new WebSocket(`${VARS.WS_URL || 'localhost:8000'}/ws`);
 
         ws.current.onopen = () => {
-            ws.current?.send(user.username);
+            // ws.current?.send(user.username);
         };
 
         ws.current.onmessage = (event) => {

@@ -10,10 +10,16 @@ from ..actions.user_actions import UserActions
 
 oauth2_scheme = OAuth2PasswordBearer("/token")
 
-def validate_token(token: str = Depends(oauth2_scheme)) -> None:
+def validate_token(token:str) -> dict | None:
     try:
         data = json.loads(verify_token(token))
     except Exception as e:
+        return None
+    return data
+
+def get_data_token(token: str = Depends(oauth2_scheme)):
+    data = validate_token(token=token)
+    if not data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Invalid credentials",
@@ -22,7 +28,7 @@ def validate_token(token: str = Depends(oauth2_scheme)) -> None:
     
     return data
 
-token_depend = Annotated[dict,Depends(validate_token)]
+token_depend = Annotated[dict,Depends(get_data_token)]
 
 def verify_token(token: str):
     try:

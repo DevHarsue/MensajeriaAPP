@@ -18,7 +18,7 @@ export function SideBar({userLetter,showChat}:SideBarProps){
         Router.push("/")
     }
     return (
-        <section className={`${showChat ? 'hidden' : 'flex'} bg-gray-800 w-min border-b border-r border-gray-700 p-2 flex-col justify-between`}>
+        <section className={`${showChat ? 'hidden md:flex' : 'flex'} bg-gray-800 w-min border-b border-r border-gray-700 p-2 flex-col justify-between`}>
             <div className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-medium select-none">
                     {userLetter}
             </div>

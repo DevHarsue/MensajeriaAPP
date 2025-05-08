@@ -1,7 +1,7 @@
 from pydantic import BaseModel,field_serializer
 from datetime import datetime
-
-class Message(BaseModel):
+    
+class MessageResponse(BaseModel):
     date: datetime
     sender: str
     content: str
