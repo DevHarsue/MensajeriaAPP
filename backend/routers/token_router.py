@@ -105,14 +105,7 @@ def login(request: Request, form_data: RequestForm = Depends()) -> JSONResponse:
     #     # domain=cookie_domain,
     # )
     cookie_value = (
-        f"access_token={token}; "
-        f"Secure={ENV=="production"}; "
-        f"HttpOnly; "
-        f"SameSite={"none" if ENV=="production" else "lax"}; "
-        f"Partitioned; "  
-        f"Max-Age={86400*7}; "
-        f"Path=/; "
-    )
+        f"""access_token={token};Secure={ENV=='production'};HttpOnly;SameSite={"none" if ENV=="production" else "lax"};Partitioned;Max-Age={86400*7};Path=/;""")
     
     response.headers.append("Set-Cookie", cookie_value)
     
