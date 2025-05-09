@@ -102,7 +102,7 @@ def login(request: Request, form_data: RequestForm = Depends()) -> JSONResponse:
         httponly=True,  
         secure=ENV=="production",
         samesite="none" if ENV=="production" else "lax", 
-        domain=cookie_domain,
+        # domain=cookie_domain,
     )
     
     return response

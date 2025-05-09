@@ -66,6 +66,6 @@ def logout(request: Request, _: token_depend):
         httponly=True,  
         secure=ENV=="production",
         samesite="none" if ENV=="production" else "lax", 
-        domain=cookie_domain,
+        # domain=cookie_domain,
     )
     return response
