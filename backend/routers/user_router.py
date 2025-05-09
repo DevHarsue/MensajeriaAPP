@@ -60,12 +60,24 @@ def get_validate_token(data: token_depend):
 @user_router.get("/logout",status_code=status.HTTP_200_OK)
 def logout(request: Request, _: token_depend):
     response = JSONResponse(content={"message":"Logout Sucessful!"},status_code=status.HTTP_200_OK)
-    cookie_domain = get_domain(request=request)
-    response.delete_cookie(
-        key="access_token",
-        httponly=True,  
-        secure=ENV=="production",
-        samesite="none" if ENV=="production" else "lax", 
-        # domain=cookie_domain,
+    # cookie_domain = get_domain(request=request)
+    # response.delete_cookie(
+    #     key="access_token",
+    #     httponly=True,  
+    #     secure=ENV=="production",
+    #     samesite="none" if ENV=="production" else "lax", 
+    #     # domain=cookie_domain,
+    # )
+    
+    cookie_value = (
+        f"access_token=''; "
+        f"Secure={ENV=="production"}; "
+        f"HttpOnly; "
+        f"SameSite={"none" if ENV=="production" else "lax"}; "
+        f"Partitioned; "  
+        f"Max-Age={0}; "
+        f"Path=/; "
     )
+    
+    response.headers.append("Set-Cookie", cookie_value)
     return response

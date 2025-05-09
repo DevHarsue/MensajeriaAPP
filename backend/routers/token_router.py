@@ -94,23 +94,27 @@ def login(request: Request, form_data: RequestForm = Depends()) -> JSONResponse:
     token = encode_token(user.username,user.email)
     response = JSONResponse(content={"access_token": token, "token_type": "bearer"},status_code=status.HTTP_200_OK)
     # cookie_domain = get_domain(request=request)
-    print({
-        "key":"access_token",
-        "value":token,
-        "max_age":86400*7,  
-        "httponly":True,  
-        "secure":ENV=="production",
-        "samesite":"none" if ENV=="production" else "lax", 
-    })
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        max_age=86400*7,  
-        httponly=True,  
-        secure=ENV=="production",
-        samesite="none" if ENV=="production" else "lax", 
-        # domain=cookie_domain,
+    # response.set_cookie(
+    #     key="access_token",
+    #     value=token,
+    #     max_age=86400*7,  
+    #     httponly=True,  
+    #     secure=ENV=="production",
+    #     samesite="none" if ENV=="production" else "lax",
+    #     partitioned=True,
+    #     # domain=cookie_domain,
+    # )
+    cookie_value = (
+        f"access_token={token}; "
+        f"Secure={ENV=="production"}; "
+        f"HttpOnly; "
+        f"SameSite={"none" if ENV=="production" else "lax"}; "
+        f"Partitioned; "  
+        f"Max-Age={86400*7}; "
+        f"Path=/; "
     )
+    
+    response.headers.append("Set-Cookie", cookie_value)
     
     return response
 
