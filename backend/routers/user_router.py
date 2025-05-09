@@ -70,14 +70,8 @@ def logout(request: Request, _: token_depend):
     # )
     
     cookie_value = (
-        f"access_token=''; "
-        f"Secure={ENV=="production"}; "
-        f"HttpOnly; "
-        f"SameSite={"none" if ENV=="production" else "lax"}; "
-        f"Partitioned; "  
-        f"Max-Age={0}; "
-        f"Path=/; "
-    )
+        f"""access_token='';Secure={ENV=='production'};HttpOnly;SameSite={"none" if ENV=="production" else "lax"};Partitioned;Max-Age={0};Path=/;""")
     
+    print(cookie_value)
     response.headers.append("Set-Cookie", cookie_value)
     return response
