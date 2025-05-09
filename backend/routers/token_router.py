@@ -93,8 +93,15 @@ def login(request: Request, form_data: RequestForm = Depends()) -> JSONResponse:
             )
     token = encode_token(user.username,user.email)
     response = JSONResponse(content={"access_token": token, "token_type": "bearer"},status_code=status.HTTP_200_OK)
-    cookie_domain = get_domain(request=request)
-    print(cookie_domain)
+    # cookie_domain = get_domain(request=request)
+    print({
+        "key":"access_token",
+        "value":token,
+        "max_age":86400*7,  
+        "httponly":True,  
+        "secure":ENV=="production",
+        "samesite":"none" if ENV=="production" else "lax", 
+    })
     response.set_cookie(
         key="access_token",
         value=token,
