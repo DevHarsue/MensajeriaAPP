@@ -1,4 +1,3 @@
-import { deleteCookie } from "cookies-next"
 import { useUser } from "@/providers/UserContext"
 import { useRouter } from "next/navigation"
 
@@ -10,11 +9,10 @@ interface SideBarProps{
 export function SideBar({userLetter,showChat}:SideBarProps){
     const {setUser} = useUser()
     const Router = useRouter()
-    const CloseSession = ()=>{
+    const CloseSession = async ()=>{
         if (!confirm("¿Desea Cerrar Sesion?")) return;
-
         setUser(null)
-        deleteCookie("token")
+        await fetch("api/logout",{method:"POST"})
         Router.push("/")
     }
     return (

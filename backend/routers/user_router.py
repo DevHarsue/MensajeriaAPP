@@ -1,6 +1,5 @@
 from fastapi import APIRouter,status,Query,HTTPException
 from fastapi.responses import JSONResponse
-# from typing import List
 from ..models.user_model import UserRequest,UserResponse,UsersResponse
 from ..models.validations import validate_email
 from ..actions.user_actions import UserActions
@@ -54,5 +53,5 @@ def get_user_by_email(email: str = Query(example="example@example.com")) -> User
     return JSONResponse(content=user_response.model_dump(),status_code=status.HTTP_200_OK)
 
 @user_router.get("/validate_token",status_code=status.HTTP_200_OK)
-def get_validate_token(data:token_depend):
+def get_validate_token(data: token_depend):
     return UserResponse(username=data["username"],email=data["email"])
