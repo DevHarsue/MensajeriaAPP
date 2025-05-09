@@ -2,8 +2,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 
-export function middleware(request: NextRequest) {
-    const token = request.cookies.get('access_token')?.value;
+export async function middleware(request: NextRequest) {
+    const token = await request.cookies.get('access_token')?.value;
+    console.log(token)
     const { pathname } = new URL(request.url);
 
     // Rutas públicas
