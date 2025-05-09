@@ -11,9 +11,7 @@ def validate_session(ws: WebSocket) -> dict | None:
     cookies = ws._cookies 
     print(cookies)
     token = cookies.get("token")
-    print(token)
     data = validate_token(token=token)
-    print(data)
     return data
 
 @ws_router.websocket("/ws")
@@ -23,6 +21,7 @@ async def websocket_endpoint(websocket: WebSocket):
     data_user = validate_session(websocket)
     if not data_user:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        return
     
     try:
         if active_connections.get(data_user["username"]):

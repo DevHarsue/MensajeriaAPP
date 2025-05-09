@@ -29,7 +29,7 @@ export default function LoginComponent(){
                 const data = await res.json()
                 setCookie("token",data.access_token,{
                     secure: VARS.ENV=="production",
-                    sameSite: "strict",
+                    sameSite: "lax",
                     maxAge: 86400 * 7
                 })
                 
