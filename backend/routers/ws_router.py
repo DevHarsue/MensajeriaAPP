@@ -9,8 +9,11 @@ ws_router = APIRouter()
 
 def validate_session(ws: WebSocket) -> dict | None:
     cookies = ws._cookies 
+    print(cookies)
     token = cookies.get("token")
+    print(token)
     data = validate_token(token=token)
+    print(data)
     return data
 
 @ws_router.websocket("/ws")
