@@ -1,11 +1,11 @@
-from fastapi import APIRouter,status,Query,HTTPException
+from fastapi import APIRouter,status,Query,HTTPException,Request
 from fastapi.responses import JSONResponse
-# from typing import List
 from ..models.user_model import UserRequest,UserResponse,UsersResponse
 from ..models.validations import validate_email
 from ..actions.user_actions import UserActions
 from ..actions.code_actions import CodeActions
-from .token_router import token_depend
+from .token_router import token_depend,get_domain
+from ..utils.env import ENV
 
 user_router = APIRouter()
 
@@ -54,5 +54,18 @@ def get_user_by_email(email: str = Query(example="example@example.com")) -> User
     return JSONResponse(content=user_response.model_dump(),status_code=status.HTTP_200_OK)
 
 @user_router.get("/validate_token",status_code=status.HTTP_200_OK)
-def get_validate_token(data:token_depend):
+def get_validate_token(data: token_depend):
     return UserResponse(username=data["username"],email=data["email"])
+
+@user_router.get("/logout",status_code=status.HTTP_200_OK)
+def logout(request: Request, _: token_depend):
+    response = JSONResponse(content={"message":"Logout Sucessful!"},status_code=status.HTTP_200_OK)
+    cookie_domain = get_domain(request=request)
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,  
+        secure=ENV=="production",
+        samesite="none" if ENV=="production" else "lax", 
+        domain=cookie_domain,
+    )
+    return response

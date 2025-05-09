@@ -8,7 +8,6 @@ import { ButtonSend } from "./components/buttons";
 import ContainerForm from "./components/containerForm";
 import { VARS } from "../utils/env";
 import { useNotification } from "@/providers/NotificationContext";
-import { setCookie } from "cookies-next";
 
 export default function LoginComponent(){
     const [username,setUsername] = useState("")
@@ -18,24 +17,17 @@ export default function LoginComponent(){
 
     const handleButton = async ()=>{
         setLoading(true)
-        await fetch(VARS.API_URL+"token/",{
+        await fetch(VARS.API_URL+"token",{
             method: "POST",
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `username=${username}&password=${password}`
-        }).then(async res=>{
+            body: `username=${username}&password=${password}`,
+            credentials: "include"
+        }).then(res=>{
             if (res.status==200){
-                const data = await res.json()
-                setCookie("token",data.access_token,{
-                    secure: VARS.ENV=="production",
-                    sameSite: "none",
-                    maxAge: 86400 * 7
-                })
-                
                 showNotification({"message":"SESION INICIADA.","type":"success"})
                 window.location.assign("/home")
-
             }else if (res.status==401){
                 showNotification({"message":"Usuario o Contraseña Incorrecta.","type":"info"})
                 setLoading(false)

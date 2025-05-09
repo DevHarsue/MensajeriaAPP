@@ -11,5 +11,8 @@ DATABASE = os.getenv("DATABASE")
 ALGORITHM = os.getenv("ALGORITHM")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+URL_FRONTEND = os.getenv("URL_FRONTEND") 
+ENV = os.getenv("ENV") 
+
 EMAIL = os.getenv("EMAIL")
 KEY_EMAIL = os.getenv("KEY_EMAIL")

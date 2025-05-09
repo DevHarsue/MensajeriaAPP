@@ -8,9 +8,8 @@ active_connections: Dict[str, WebSocket] = {}
 ws_router = APIRouter()
 
 def validate_session(ws: WebSocket) -> dict | None:
-    cookies = ws._cookies 
-    print(cookies)
-    token = cookies.get("token")
+    cookies = ws._cookies
+    token = cookies.get("access_token")
     data = validate_token(token=token)
     return data
 
