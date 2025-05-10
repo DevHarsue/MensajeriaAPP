@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { VARS } from '@/app/utils/env';
 import { cookies } from 'next/headers';
 
-export async function GET(request: Request) {
+export async function GET() {
     const token = (await cookies()).get("access_token")?.value;
     if (!token) {
         return NextResponse.json(

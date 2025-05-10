@@ -6,9 +6,7 @@ import { AText, H1Text } from './components/texts';
 import Input from "./components/inputs";
 import { ButtonSend } from "./components/buttons";
 import ContainerForm from "./components/containerForm";
-import { VARS } from '../utils/env';
 import { useNotification } from "@/providers/NotificationContext";
-import { setCookie } from "cookies-next";
 
 export default function LoginComponent(){
     const [username,setUsername] = useState("")
