@@ -1,11 +1,10 @@
-from fastapi import APIRouter,status,Query,HTTPException,Request
+from fastapi import APIRouter,status,Query,HTTPException
 from fastapi.responses import JSONResponse
 from ..models.user_model import UserRequest,UserResponse,UsersResponse
 from ..models.validations import validate_email
 from ..actions.user_actions import UserActions
 from ..actions.code_actions import CodeActions
 from .token_router import token_depend
-from ..utils.env import ENV
 
 user_router = APIRouter()
 
@@ -56,13 +55,3 @@ def get_user_by_email(email: str = Query(example="example@example.com")) -> User
 @user_router.get("/validate_token",status_code=status.HTTP_200_OK)
 def get_validate_token(data: token_depend):
     return UserResponse(username=data["username"],email=data["email"])
-
-@user_router.get("/logout",status_code=status.HTTP_200_OK)
-def logout(_: token_depend):
-    response = JSONResponse(content={"message":"Logout Sucessful!"},status_code=status.HTTP_200_OK)
-    
-    cookie_value = (
-        f"""access_token='';Secure={ENV=='production'};SameSite={"none" if ENV=="production" else "lax"};Partitioned;Max-Age={0};Path=/;""")
-    
-    response.headers.append("Set-Cookie", cookie_value)
-    return response

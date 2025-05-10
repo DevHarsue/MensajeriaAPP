@@ -7,9 +7,7 @@ export async function middleware(request: NextRequest) {
     
     const { pathname } = new URL(request.url);
 
-    // Rutas públicas
     const publicRoutes = ['/', '/register'];
-    // Rutas protegidas
     const protectedRoutes = ['/home'];
 
     if (token && publicRoutes.includes(pathname)) {

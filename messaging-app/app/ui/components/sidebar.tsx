@@ -1,6 +1,5 @@
 import { useUser } from "@/providers/UserContext"
 import { useRouter } from "next/navigation"
-import { VARS } from "@/app/utils/env"
 
 interface SideBarProps{
     userLetter: string
@@ -12,10 +11,8 @@ export function SideBar({userLetter,showChat}:SideBarProps){
     const Router = useRouter()
     const CloseSession = async ()=>{
         if (!confirm("¿Desea Cerrar Sesion?")) return;
-        await fetch(VARS.API_URL+"users/logout",{
-            credentials: "include"
-        })
         setUser(null)
+        await fetch("api/logout",{method:"POST"})
         Router.push("/")
     }
     return (

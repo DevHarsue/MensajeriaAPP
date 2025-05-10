@@ -1,5 +1,5 @@
 from jose import jwt
-from fastapi import HTTPException,status,Depends,APIRouter,Form,Request,Response
+from fastapi import HTTPException,status,Depends,APIRouter,Form
 from fastapi.responses import JSONResponse
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
@@ -9,7 +9,7 @@ from datetime import datetime,UTC,timedelta
 from ..utils.env import ALGORITHM,SECRET_KEY,ENV
 from ..actions.user_actions import UserActions
 
-oauth2_scheme = OAuth2PasswordBearer("/token",auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer("/token")
 
 def validate_token(token:str) -> dict | None:
     try:
@@ -18,14 +18,8 @@ def validate_token(token:str) -> dict | None:
         return None
     return data
 
-async def get_token_from_cookie_or_header(request: Request,access_token_header: str = Depends(oauth2_scheme)) -> str:
-    access_token_cookie = request.cookies.get("access_token")
-    if access_token_cookie:
-        return access_token_cookie
-    
-    return access_token_header
 
-def get_data_token(access_token: str = Depends(get_token_from_cookie_or_header)):
+def get_data_token(access_token: str = Depends(oauth2_scheme)):
     data = validate_token(token=access_token)
     if not data:
         raise HTTPException(
@@ -82,10 +76,6 @@ def login(form_data: RequestForm = Depends()) -> JSONResponse:
             )
     token = encode_token(user.username,user.email)
     response = JSONResponse(content={"access_token": token, "token_type": "bearer"},status_code=status.HTTP_200_OK)
-    cookie_value = (
-        f"""access_token={token};Secure={ENV=='production'};SameSite={"none" if ENV=="production" else "lax"};Partitioned;Max-Age={86400*7};Path=/;""")
-    
-    response.headers.append("Set-Cookie", cookie_value)
     
     return response
 
