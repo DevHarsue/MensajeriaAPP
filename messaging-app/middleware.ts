@@ -1,10 +1,9 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 
-
 export async function middleware(request: NextRequest) {
     const token = await request.cookies.get('access_token')?.value;
-    console.log(token)
+    console.log(request.cookies)
     const { pathname } = new URL(request.url);
 
     // Rutas públicas
