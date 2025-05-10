@@ -62,7 +62,7 @@ def logout(_: token_depend):
     response = JSONResponse(content={"message":"Logout Sucessful!"},status_code=status.HTTP_200_OK)
     
     cookie_value = (
-        f"""access_token='';Secure={ENV=='production'};HttpOnly;SameSite={"none" if ENV=="production" else "lax"};Partitioned;Max-Age={0};Path=/;""")
+        f"""access_token='';Secure={ENV=='production'};SameSite={"none" if ENV=="production" else "lax"};Partitioned;Max-Age={0};Path=/;""")
     
     response.headers.append("Set-Cookie", cookie_value)
     return response
