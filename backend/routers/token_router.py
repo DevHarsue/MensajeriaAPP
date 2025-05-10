@@ -66,24 +66,13 @@ def encode_token(username:str,email:str):
 
 token_router = APIRouter()
 
-def get_domain(request: Request) -> str | None:
-    host = request.headers.get("x-forwarded-host", "")
-    print(host)
-    if not host:
-        host = request.headers.get("host", "").split(":")[0]
-        print(host)
-        
-    cookie_domain = f".{host}" if not host.startswith("localhost") else None
-    
-    return cookie_domain
-
 class RequestForm:
     def __init__(self,username: str = Form(...), password: str = Form(...)):
         self.username = username.upper()
         self.password = password
 
 @token_router.post("/token")
-def login(request: Request, form_data: RequestForm = Depends()) -> JSONResponse:
+def login(form_data: RequestForm = Depends()) -> JSONResponse:
     actions = UserActions()
     user = actions.validate_user(username=form_data.username,password=form_data.password)
     if not user:
@@ -93,17 +82,6 @@ def login(request: Request, form_data: RequestForm = Depends()) -> JSONResponse:
             )
     token = encode_token(user.username,user.email)
     response = JSONResponse(content={"access_token": token, "token_type": "bearer"},status_code=status.HTTP_200_OK)
-    # cookie_domain = get_domain(request=request)
-    # response.set_cookie(
-    #     key="access_token",
-    #     value=token,
-    #     max_age=86400*7,  
-    #     httponly=True,  
-    #     secure=ENV=="production",
-    #     samesite="none" if ENV=="production" else "lax",
-    #     partitioned=True,
-    #     # domain=cookie_domain,
-    # )
     cookie_value = (
         f"""access_token={token};Secure={ENV=='production'};HttpOnly;SameSite={"none" if ENV=="production" else "lax"};Partitioned;Max-Age={86400*7};Path=/;""")
     
