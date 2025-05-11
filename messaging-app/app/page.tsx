@@ -1,4 +1,4 @@
-import LoginComponent from "./ui/loginComponent";
+import LoginComponent from "./ui/login";
 
 export default function Page(){   
     return (<LoginComponent />);

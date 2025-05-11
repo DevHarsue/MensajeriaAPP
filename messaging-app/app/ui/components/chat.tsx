@@ -27,7 +27,7 @@ export const Chat = (
         }:ChatProps
     ) => {  
     return (
-        <section className={`${showChat ? 'flex' : 'hidden'} flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900 h-[100dvh] fixed md:relative inset-0`}>
+        <section className={`${showChat ? 'flex' : 'hidden'} flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900  md:relative inset-0`}>
             {/* Chat Header */}
             <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center">
                 <button

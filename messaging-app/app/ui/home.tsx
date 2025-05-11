@@ -66,18 +66,17 @@ export default function HomeComponent() {
                     break;
                 
                 case 'message':
-                    if (data.sender && data.content && data.date && data.sender === recipientRef.current) {
-                        setMessages(prev => [...prev, { sender: data.sender!, content: data.content!, date: data.date!}]);
+                    if (data.sender && data.content && data.sender === recipientRef.current) {
+                        setMessages(prev => [...prev, { sender: data.sender!, content: data.content!, date: new Date().toLocaleTimeString([], {hour: '2-digit',minute: '2-digit',second: '2-digit'}).toUpperCase().replace(".","")}]);
+                        console.log(messages)
                     }
                     break;
                 
                 case 'alert':
-                    alert(data.content);
                     break;
                 
                 case 'chat_response':
                     if (data.content) {
-                        console.log(data.content)
                         const chatHistory = data.content.map((msg: any) => ({
                             sender: msg.sender,
                             content: msg.content,
@@ -114,13 +113,13 @@ export default function HomeComponent() {
             type: "send_message"
         };
 
-        ws.current.send(JSON.stringify(messageData));
         setMessages(prev => [...prev, { sender: user.username, content: messageInput, date: new Date().toLocaleTimeString([], {hour: '2-digit',minute: '2-digit',second: '2-digit'}).toUpperCase().replace(".","")}]);
+        ws.current.send(JSON.stringify(messageData));
         setMessageInput('');
     };
     if (!user?.username) return <Loader />;
     return (
-        <div className='flex w-full bg-gray-800 h-[100dvh] relative'>
+        <div className='flex w-full bg-gray-800'>
             <SideBar 
                 userLetter={user.username.charAt(0)}
                 showChat={showChat}
