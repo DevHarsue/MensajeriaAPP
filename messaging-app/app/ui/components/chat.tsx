@@ -27,7 +27,7 @@ export const Chat = (
         }:ChatProps
     ) => {  
     return (
-        <section className={`${showChat ? 'flex' : 'hidden'} flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900 h-screen`}>
+        <section className={`${showChat ? 'flex' : 'hidden'} flex-col w-full md:w-2/3 lg:w-3/4 bg-gray-900 h-[100dvh] fixed md:relative inset-0`}>
             {/* Chat Header */}
             <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center">
                 <button
@@ -63,6 +63,7 @@ export const Chat = (
             >
                 <div className="space-y-3">
                     {messages.map((msg, index) => (
+                        
                         <div
                             key={index}
                             className={`flex ${
@@ -83,10 +84,7 @@ export const Chat = (
                                         msg.sender === username ? 'text-orange-200' : 'text-gray-400'
                                     }`}
                                 >
-                                    {new Date().toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
+                                    {msg.date}
                                 </p>
                             </div>
                         </div>
@@ -96,7 +94,7 @@ export const Chat = (
             </div>
 
             {/* Message Input */}
-            <div className="p-4 bg-gray-800 border-t border-gray-700">
+            <div className="sticky bottom-0 p-4 bg-gray-800 border-t border-gray-700 z-10">
                 <form onSubmit={sendMessage} className="flex items-center gap-2" autoComplete="off">
                     <input
                         name="inputMessageToSend"

@@ -8,4 +8,4 @@ class MessageResponse(BaseModel):
 
     @field_serializer('date')
     def date_to_isoformat(self, value: datetime) -> str:
-        return value.isoformat()
+        return value.strftime("%I:%M:%S %p")+"."

@@ -8,7 +8,7 @@ import Loader from './components/loader';
 import { VARS } from '../utils/env';
 import { SideBar } from './components/sidebar';
 
-export default function ChatComponent() {
+export default function HomeComponent() {
     const [recipient, setRecipient] = useState<string>("");
     const [messageInput, setMessageInput] = useState('');
     const [users, setUsers] = useState<string[]>([]);
@@ -22,8 +22,21 @@ export default function ChatComponent() {
 
     useEffect(() => {
         recipientRef.current = recipient;
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [recipient,messages]);
+    }, [recipient]);
+
+    useEffect(() => {
+        const scrollToBottom = () => {
+            messagesEndRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end'
+            });
+        };
+        
+        scrollToBottom();
+        // Agrega event listener para resize (teclado móvil)
+        window.addEventListener('resize', scrollToBottom);
+        return () => window.removeEventListener('resize', scrollToBottom);
+    }, [messages]);
 
     useEffect(()=>{
         setUpWS()
@@ -38,6 +51,10 @@ export default function ChatComponent() {
             ws.current?.send(user.ws_token);
         };
 
+        ws.current.onclose = (e:CloseEvent) =>{
+            console.log(e)
+        }
+
         ws.current.onmessage = (event) => {
             const data: WebSocketMessage = JSON.parse(event.data);
             
@@ -49,8 +66,8 @@ export default function ChatComponent() {
                     break;
                 
                 case 'message':
-                    if (data.sender && data.content && data.sender === recipientRef.current) {
-                        setMessages(prev => [...prev, { sender: data.sender!, content: data.content! }]);
+                    if (data.sender && data.content && data.date && data.sender === recipientRef.current) {
+                        setMessages(prev => [...prev, { sender: data.sender!, content: data.content!, date: data.date!}]);
                     }
                     break;
                 
@@ -60,9 +77,11 @@ export default function ChatComponent() {
                 
                 case 'chat_response':
                     if (data.content) {
+                        console.log(data.content)
                         const chatHistory = data.content.map((msg: any) => ({
                             sender: msg.sender,
-                            content: msg.content
+                            content: msg.content,
+                            date: msg.date
                         }));
                         setMessages(chatHistory);
                     }
@@ -87,7 +106,7 @@ export default function ChatComponent() {
         if (!user?.username) return;
 
         if (!messageInput || !recipient || !ws.current) return;
-
+    
         const messageData = {
             username: user?.username,
             recipient: recipient,
@@ -96,12 +115,12 @@ export default function ChatComponent() {
         };
 
         ws.current.send(JSON.stringify(messageData));
-        setMessages(prev => [...prev, { sender: user.username, content: messageInput }]);
+        setMessages(prev => [...prev, { sender: user.username, content: messageInput, date: new Date().toLocaleTimeString([], {hour: '2-digit',minute: '2-digit',second: '2-digit'}).toUpperCase().replace(".","")}]);
         setMessageInput('');
     };
     if (!user?.username) return <Loader />;
     return (
-        <div className='flex w-full bg-gray-800'>
+        <div className='flex w-full bg-gray-800 h-[100dvh] relative'>
             <SideBar 
                 userLetter={user.username.charAt(0)}
                 showChat={showChat}

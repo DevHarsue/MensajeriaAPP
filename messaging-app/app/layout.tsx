@@ -33,7 +33,7 @@ export default function RootLayout({
                 <NotificationProvider>
                     <UserProvider>
                         <Auth>
-                            <main className="flex min-h-screen bg-gray-800">
+                            <main className="flex bg-gray-800 h-[100dvh] relative overflow-hidden">
                                 {children}
                             </main>
                         </Auth>

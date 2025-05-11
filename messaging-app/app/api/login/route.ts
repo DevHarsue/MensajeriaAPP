@@ -32,7 +32,7 @@ export async function POST(request: Request) {
             value: data.access_token,
             httpOnly: true,
             secure: VARS.ENV === 'production',
-            sameSite: VARS.ENV=="production" ? "none" : "lax",
+            sameSite: VARS.ENV==="production" ? "none" : "lax",
             path: '/',
             maxAge: 86400*7
         });

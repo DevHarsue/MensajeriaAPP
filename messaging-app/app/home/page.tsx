@@ -1,5 +1,5 @@
-import ChatComponent from "../ui/chatComponent";
+import HomeComponent from "../ui/homeComponent";
 
 export default function Page(){   
-    return (<ChatComponent />);
+    return (<HomeComponent />);
 }

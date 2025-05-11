@@ -3,9 +3,11 @@ export interface WebSocketMessage {
     users?: string[];
     content?: any;
     sender?: string;
+    date?: string;
 }
 
 export interface ChatMessage {
     sender: string;
     content: string;
+    date: string;
 }
