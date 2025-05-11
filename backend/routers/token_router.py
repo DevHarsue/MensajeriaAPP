@@ -44,13 +44,23 @@ def verify_token(token: str):
 
 def encode_token(username:str,email:str):
     try:
+        payload_ws = {
+            "sub": json.dumps(
+                    {
+                        "username":username
+                    }),
+            "exp": datetime.now(UTC) + timedelta(minutes=5)
+        }
+        ws_token = jwt.encode(payload_ws,SECRET_KEY,algorithm=ALGORITHM)
+        
         payload = {
             "sub": json.dumps(
                     {
                         "username":username,
-                        "email":email
+                        "email":email,
+                        "ws_token": ws_token
                     }),
-            "exp": datetime.now(UTC) + timedelta(days=30)
+            "exp": datetime.now(UTC) + timedelta(days=7)
         }
         token = jwt.encode(payload,SECRET_KEY,algorithm=ALGORITHM)
         return token
