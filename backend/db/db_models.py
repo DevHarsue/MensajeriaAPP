@@ -10,11 +10,6 @@ class User(Base):
     email = Column(Text, nullable=False,unique=True)
     password = Column(CHAR(60), nullable=False)
 
-class UserToken(Base):
-    __tablename__ = 'users_token'
-    user_token_id = Column(Integer, primary_key=True,autoincrement=True)
-    user_id = Column(Integer,ForeignKey("users.user_id"),nullable=False)
-    token = Column(Text, nullable=False)
 
 class Code(Base):
     __tablename__ = 'codes'

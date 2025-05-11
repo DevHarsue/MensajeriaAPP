@@ -7,9 +7,7 @@ active_connections: Dict[str, WebSocket] = {}
 
 ws_router = APIRouter()
 
-def validate_session(ws: WebSocket) -> dict | None:
-    cookies = ws._cookies
-    token = cookies.get("access_token")
+def validate_ws_token(token:str) -> dict | None:
     data = validate_token(token=token)
     return data
 
@@ -17,7 +15,9 @@ def validate_session(ws: WebSocket) -> dict | None:
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     
-    data_user = validate_session(websocket)
+    ws_token = await websocket.receive_text()
+    data_user = validate_ws_token(ws_token)
+    print(data_user)
     if not data_user:
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return

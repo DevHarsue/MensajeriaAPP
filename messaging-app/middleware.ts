@@ -3,7 +3,6 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
     const token = await request.cookies.get('access_token')?.value;
-    console.log('Token en middleware:', token)
     
     const { pathname } = new URL(request.url);
 

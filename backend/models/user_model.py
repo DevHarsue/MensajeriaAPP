@@ -40,6 +40,9 @@ class UserResponse(BaseModel):
     username: str
     email: str
 
+class UserDataResponse(UserResponse):
+    ws_token: str
+
 class MetaRegisters(BaseModel):
     total: int
     page: int
