@@ -5,6 +5,7 @@ import { createContext, useContext, useState } from 'react';
 export type User = {
     username: string
     email: string
+    ws_token: string
 };
 
 type UserContextType = {

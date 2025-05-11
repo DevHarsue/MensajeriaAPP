@@ -1,11 +1,12 @@
 from jose import jwt
 from fastapi import HTTPException,status,Depends,APIRouter,Form
+from fastapi.responses import JSONResponse
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
 from jose.exceptions import JWTError,ExpiredSignatureError
 import json
 from datetime import datetime,UTC,timedelta
-from ..utils.env import ALGORITHM,SECRET_KEY
+from ..utils.env import ALGORITHM,SECRET_KEY,ENV
 from ..actions.user_actions import UserActions
 
 oauth2_scheme = OAuth2PasswordBearer("/token")
@@ -17,13 +18,13 @@ def validate_token(token:str) -> dict | None:
         return None
     return data
 
-def get_data_token(token: str = Depends(oauth2_scheme)):
-    data = validate_token(token=token)
+
+def get_data_token(access_token: str = Depends(oauth2_scheme)):
+    data = validate_token(token=access_token)
     if not data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid credentials",
-            headers={"WWW-Authenticate": "Bearer"}
+            detail=f"Invalid token"
             )
     
     return data
@@ -43,13 +44,23 @@ def verify_token(token: str):
 
 def encode_token(username:str,email:str):
     try:
+        payload_ws = {
+            "sub": json.dumps(
+                    {
+                        "username":username
+                    }),
+            "exp": datetime.now(UTC) + timedelta(minutes=5)
+        }
+        ws_token = jwt.encode(payload_ws,SECRET_KEY,algorithm=ALGORITHM)
+        
         payload = {
             "sub": json.dumps(
                     {
                         "username":username,
-                        "email":email
+                        "email":email,
+                        "ws_token": ws_token
                     }),
-            "exp": datetime.now(UTC) + timedelta(days=30)
+            "exp": datetime.now(UTC) + timedelta(days=7)
         }
         token = jwt.encode(payload,SECRET_KEY,algorithm=ALGORITHM)
         return token
@@ -65,7 +76,7 @@ class RequestForm:
         self.password = password
 
 @token_router.post("/token")
-def login(form_data: RequestForm = Depends()):
+def login(form_data: RequestForm = Depends()) -> JSONResponse:
     actions = UserActions()
     user = actions.validate_user(username=form_data.username,password=form_data.password)
     if not user:
@@ -74,5 +85,7 @@ def login(form_data: RequestForm = Depends()):
                 detail="INVALID CREDENTIALS",
             )
     token = encode_token(user.username,user.email)
+    response = JSONResponse(content={"access_token": token, "token_type": "bearer"},status_code=status.HTTP_200_OK)
     
-    return {"access_token": token, "token_type": "bearer"}
+    return response
+

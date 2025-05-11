@@ -33,7 +33,6 @@ class MessageActions:
                         .order_by(desc(count(Participant.chat_id)))
                         .limit(1)
                     )
-            print(query)
             chat_id = session.execute(query).fetchone()[0]
             return chat_id
         except Exception as e:

@@ -6,18 +6,18 @@ from .routers.user_router import user_router
 from .routers.code_router import code_router
 from .routers.token_router import token_router
 
+from .utils.env import URL_FRONTEND
+
 app = FastAPI(
     title="API MESSAGING-APP",
     version="1.2.1"
 )
 
-origins = [
-    "http://localhost",
-    "http://localhost:3000"]
+origins = ["http://localhost",URL_FRONTEND,URL_FRONTEND+"/home"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -1,14 +1,12 @@
 
 import { NextResponse, type NextRequest } from 'next/server';
 
-
-export function middleware(request: NextRequest) {
-    const token = request.cookies.get('token')?.value;
+export async function middleware(request: NextRequest) {
+    const token = await request.cookies.get('access_token')?.value;
+    
     const { pathname } = new URL(request.url);
 
-    // Rutas públicas
     const publicRoutes = ['/', '/register'];
-    // Rutas protegidas
     const protectedRoutes = ['/home'];
 
     if (token && publicRoutes.includes(pathname)) {

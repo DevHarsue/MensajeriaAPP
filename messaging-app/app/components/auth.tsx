@@ -2,8 +2,6 @@
 
 import { useEffect} from 'react';
 import { useRouter } from 'next/navigation';
-import { getCookie,deleteCookie } from 'cookies-next';
-import { VARS } from '../utils/env';
 import { useUser } from '@/providers/UserContext';
 
 export default function Auth({children}: {children: React.ReactNode;}) {
@@ -12,23 +10,18 @@ export default function Auth({children}: {children: React.ReactNode;}) {
     const {setUser} = useUser()
 
     useEffect(() => {
-        const validateToken = async () => {
-            const token = await getCookie('token');
-            if (!token) return;
 
-            await fetch(VARS.API_URL+'users/validate_token', {
-                headers: { Authorization: `Bearer ${token}` },
-                
-            }).then(async res=>{
-                if (!res.ok) throw new Error('Token inválido');
-                const data = await res.json()
+        const validateToken = async () => {
+            const response = await fetch("api/validateToken")
+            if (response.ok){
+                const data = await response.json()
                 setUser(data)
-            }).catch(err=>{
-                console.log(err)
-                deleteCookie("token")
-                router.push('/')
-            });
-                
+                return
+            }
+
+            await fetch("api/logout",{method:"POST"})
+            router.push("/")
+
         };
 
         validateToken();
